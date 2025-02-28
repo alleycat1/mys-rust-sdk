@@ -4,9 +4,9 @@
 use anyhow::Result;
 use cynic::QueryBuilder;
 
-use _graphql_client::query_types::schema;
-use _graphql_client::query_types::BigInt;
-use _graphql_client::Client;
+use myso_graphql_client::query_types::schema;
+use myso_graphql_client::query_types::BigInt;
+use myso_graphql_client::Client;
 
 // The data returned by the custom query.
 #[derive(cynic::QueryFragment, Debug)]

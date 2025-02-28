@@ -11,16 +11,16 @@ use ark_bn254::G2Projective;
 use ark_ff::PrimeField;
 use ark_groth16::PreparedVerifyingKey;
 use ark_groth16::Proof;
-use _sdk_types::Bn254FieldElement;
-use _sdk_types::CircomG1;
-use _sdk_types::CircomG2;
-use _sdk_types::Ed25519PublicKey;
-use _sdk_types::Jwk;
-use _sdk_types::Secp256k1PublicKey;
-use _sdk_types::Secp256r1PublicKey;
-use _sdk_types::SimpleSignature;
-use _sdk_types::ZkLoginInputs;
-use _sdk_types::ZkLoginProof;
+use myso_sdk_types::Bn254FieldElement;
+use myso_sdk_types::CircomG1;
+use myso_sdk_types::CircomG2;
+use myso_sdk_types::Ed25519PublicKey;
+use myso_sdk_types::Jwk;
+use myso_sdk_types::Secp256k1PublicKey;
+use myso_sdk_types::Secp256r1PublicKey;
+use myso_sdk_types::SimpleSignature;
+use myso_sdk_types::ZkLoginInputs;
+use myso_sdk_types::ZkLoginProof;
 
 use super::POSEIDON;
 
@@ -522,7 +522,7 @@ pub(crate) fn gen_address_seed_with_salt_hash(
 #[cfg(test)]
 mod test {
     use super::*;
-    use _sdk_types::Ed25519Signature;
+    use myso_sdk_types::Ed25519Signature;
 
     #[cfg(test)]
     #[cfg(target_arch = "wasm32")]

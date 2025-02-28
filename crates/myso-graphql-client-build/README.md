@@ -6,7 +6,7 @@ this function in a `build.rs` file in your crate if you need to build custom que
 1. Add this crate as a build dependency in your `Cargo.toml` file.
 ```toml
 [build-dependencies]
--graphql-client-build = { git = "https://github.com/mystenlabs/-rust-sdk", package = "-graphql-client-build", branch = "master" }
+myso-graphql-client-build = { git = "https://github.com/mystenlabs/myso-rust-sdk", package = "myso-graphql-client-build", branch = "master" }
 ```
 
 2. Add a `build.rs` file in your crate root directory and call the `register_schema` function in it.
@@ -14,20 +14,20 @@ this function in a `build.rs` file in your crate if you need to build custom que
 // build.rs file
 fn main() {
     let schema_name = "MYSCHEMA";
-    _graphql_client_build::register_schema(schema_name);
+    myso_graphql_client_build::register_schema(schema_name);
 }
 ```
 
-3. Add the `cynic` and `-graphql-client` dependencies in your `Cargo.toml` file. You should have something like this.
+3. Add the `cynic` and `myso-graphql-client` dependencies in your `Cargo.toml` file. You should have something like this.
 ```toml
 # Cargo.toml
 # ...
 [dependencies]
 cynic = "3.8.0"
--graphql-client = { git = "https://github.com/mystenlabs/-rust-sdk", package = "-graphql-client", branch = "master" }
+myso-graphql-client = { git = "https://github.com/mystenlabs/myso-rust-sdk", package = "myso-graphql-client", branch = "master" }
 
 [build-dependencies]
--graphql-client-build = { git = "https://github.com/mystenlabs/-rust-sdk", package = "-graphql-client-build", branch = "master" }
+myso-graphql-client-build = { git = "https://github.com/mystenlabs/myso-rust-sdk", package = "myso-graphql-client-build", branch = "master" }
 ```
 
 4. If using `cynic`, use the cynic generator to generate the Rust types from the GraphQL schema. \
@@ -40,7 +40,7 @@ cynic = "3.8.0"
 // lib.rs
 // Custom query
 use cynic::QueryBuilder;
-use _graphql_client::{query_types::schema, Client};
+use myso_graphql_client::{query_types::schema, Client};
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(schema = "MYSCHEMA", graphql_type = "Query")]
@@ -57,6 +57,6 @@ async fn main() {
 }
 ```
 
-6. For `UInt53`, you can use `u64` type directly as the `-graphql-client`'s schema implements the `impl_scalar`. Similarly for other types (Base64, DateTime). See more available types here: https://github.com/MystenLabs/-rust-sdk/blob/02639f6b09375fe03fa2243868be17bec1dfa33c/crates/-graphql-client/src/query_types/mod.rs?plain=1#L124-L126
+6. For `UInt53`, you can use `u64` type directly as the `myso-graphql-client`'s schema implements the `impl_scalar`. Similarly for other types (Base64, DateTime). See more available types here: https://github.com/MystenLabs/myso-rust-sdk/blob/02639f6b09375fe03fa2243868be17bec1dfa33c/crates/myso-graphql-client/src/query_types/mod.rs?plain=1#L124-L126
 
 7. Read the `cynic` [documentation](https://cynic-rs.dev/) to learn how to work with it, particularly when it comes to passing arguments to the query.

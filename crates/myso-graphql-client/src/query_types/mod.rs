@@ -16,7 +16,7 @@ mod object;
 mod packages;
 mod protocol_config;
 mod service_config;
-mod ns;
+mod mysons;
 mod transaction;
 
 pub use active_validators::ActiveValidatorsArgs;
@@ -94,10 +94,10 @@ pub use protocol_config::ProtocolVersionArgs;
 pub use service_config::Feature;
 pub use service_config::ServiceConfig;
 pub use service_config::ServiceConfigQuery;
-pub use ns::DefaultMySonsNameQuery;
-pub use ns::DefaultMySonsNameQueryArgs;
-pub use ns::ResolveMySonsQuery;
-pub use ns::ResolveMySonsQueryArgs;
+pub use mysons::DefaultMySonsNameQuery;
+pub use mysons::DefaultMySonsNameQueryArgs;
+pub use mysons::ResolveMySonsQuery;
+pub use mysons::ResolveMySonsQueryArgs;
 pub use transaction::TransactionBlock;
 pub use transaction::TransactionBlockArgs;
 pub use transaction::TransactionBlockEffectsQuery;
@@ -107,7 +107,7 @@ pub use transaction::TransactionBlocksQuery;
 pub use transaction::TransactionBlocksQueryArgs;
 pub use transaction::TransactionsFilter;
 
-use _types::Address;
+use myso_types::Address;
 
 use cynic::impl_scalar;
 use serde_json::Value as JsonValue;

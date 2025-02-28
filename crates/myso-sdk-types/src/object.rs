@@ -430,11 +430,11 @@ mod serialization {
     enum MoveStructType {
         /// A type that is not `0x2::coin::Coin<T>`
         Other(StructTag),
-        /// A MYSO coin (i.e., `0x2::coin::Coin<0x2::::MYSO>`)
+        /// A MYSO coin (i.e., `0x2::coin::Coin<0x2::myso::MYSO>`)
         GasCoin,
         /// A record of a staked MYSO coin (i.e., `0x3::staking_pool::StakedMySo`)
         StakedMySo,
-        /// A non-MYSO coin type (i.e., `0x2::coin::Coin<T> where T != 0x2::::MYSO`)
+        /// A non-MYSO coin type (i.e., `0x2::coin::Coin<T> where T != 0x2::myso::MYSO`)
         Coin(TypeTag),
         // NOTE: if adding a new type here, and there are existing on-chain objects of that
         // type with Other(_), that is ok, but you must hand-roll PartialEq/Eq/Ord/maybe Hash
@@ -446,11 +446,11 @@ mod serialization {
     enum MoveStructTypeRef<'a> {
         /// A type that is not `0x2::coin::Coin<T>`
         Other(&'a StructTag),
-        /// A MYSO coin (i.e., `0x2::coin::Coin<0x2::::MYSO>`)
+        /// A MYSO coin (i.e., `0x2::coin::Coin<0x2::myso::MYSO>`)
         GasCoin,
         /// A record of a staked MYSO coin (i.e., `0x3::staking_pool::StakedMySo`)
         StakedMySo,
-        /// A non-MYSO coin type (i.e., `0x2::coin::Coin<T> where T != 0x2::::MYSO`)
+        /// A non-MYSO coin type (i.e., `0x2::coin::Coin<T> where T != 0x2::myso::MYSO`)
         Coin(&'a TypeTag),
         // NOTE: if adding a new type here, and there are existing on-chain objects of that
         // type with Other(_), that is ok, but you must hand-roll PartialEq/Eq/Ord/maybe Hash
@@ -462,7 +462,7 @@ mod serialization {
             match self {
                 MoveStructType::Other(tag) => tag,
                 MoveStructType::GasCoin => StructTag::gas_coin(),
-                MoveStructType::StakedMySo => StructTag::staked_(),
+                MoveStructType::StakedMySo => StructTag::staked_myso(),
                 MoveStructType::Coin(type_tag) => StructTag::coin(type_tag),
             }
         }
@@ -487,7 +487,7 @@ mod serialization {
                     } = s_inner.as_ref();
 
                     if address == &Address::TWO
-                        && module == ""
+                        && module == "myso"
                         && name == "MYSO"
                         && type_params.is_empty()
                     {

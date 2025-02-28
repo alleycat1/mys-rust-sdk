@@ -11,7 +11,7 @@
 /// // build.rs file
 /// fn main() {
 ///     let schema_name = "MYSCHEMA"
-///     _graphql_client_build::register_schema(schema_name);
+///     myso_graphql_client_build::register_schema(schema_name);
 /// }
 ///
 /// // Cargo.toml
@@ -20,12 +20,12 @@
 /// cynic = "3.8.0"
 /// ...
 /// [build-dependencies]
-/// _graphql_client_build = "VERSION_HERE"
+/// myso_graphql_client_build = "VERSION_HERE"
 ///
 /// // lib.rs
 /// // Custom query
 /// use cynic::QueryBuilder;
-/// use _graphql_client::{query_types::schema, Client};
+/// use myso_graphql_client::{query_types::schema, Client};
 ///
 /// #[derive(cynic::QueryFragment, Debug)]
 /// #[cynic(schema = "MYSCHEMA", graphql_type = "Query")]

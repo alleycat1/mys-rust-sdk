@@ -1,5 +1,5 @@
 [package]
-name = "-graphql-client-build"
+name = "myso-graphql-client-build"
 version = "0.1.0"
 edition = "2021"
 

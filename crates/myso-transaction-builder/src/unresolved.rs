@@ -1,9 +1,9 @@
-use _types::Address;
-use _types::Command;
-use _types::ObjectDigest;
-use _types::ObjectId;
-use _types::TransactionExpiration;
-use _types::Version;
+use myso_types::Address;
+use myso_types::Command;
+use myso_types::ObjectDigest;
+use myso_types::ObjectId;
+use myso_types::TransactionExpiration;
+use myso_types::Version;
 
 // A potentially unresolved user transaction. Note that one can construct a fully resolved
 // transaction using this type by providing all the required data.
@@ -297,9 +297,9 @@ impl From<Value> for serde_json::Value {
     }
 }
 
-impl From<&_types::Object> for Input {
-    fn from(object: &_types::Object) -> Self {
-        use _types::Owner;
+impl From<&myso_types::Object> for Input {
+    fn from(object: &myso_types::Object) -> Self {
+        use myso_types::Owner;
 
         let input = Input::by_id(object.object_id())
             .with_digest(object.digest())

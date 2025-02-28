@@ -1,9 +1,9 @@
 use crate::secp256r1::Secp256r1VerifyingKey;
 use crate::SignatureError;
 use signature::Verifier;
-use _sdk_types::PasskeyAuthenticator;
-use _sdk_types::SimpleSignature;
-use _sdk_types::UserSignature;
+use myso_sdk_types::PasskeyAuthenticator;
+use myso_sdk_types::SimpleSignature;
+use myso_sdk_types::UserSignature;
 
 #[derive(Default, Clone, Debug)]
 pub struct PasskeyVerifier {}
@@ -65,7 +65,7 @@ impl Verifier<UserSignature> for PasskeyVerifier {
 mod test {
     use super::*;
     use crate::MySoVerifier;
-    use _sdk_types::Transaction;
+    use myso_sdk_types::Transaction;
 
     #[cfg(target_arch = "wasm32")]
     use wasm_bindgen_test::wasm_bindgen_test as test;

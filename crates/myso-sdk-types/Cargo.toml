@@ -1,8 +1,8 @@
 [package]
-name = "-sdk-types"
+name = "myso-sdk-types"
 version = "0.0.1"
 authors = ["Brandon Williams <brandon@mystenlabs.com>"]
-repository = "https://github.com/mystenlabs/-rust-sdk/"
+repository = "https://github.com/mystenlabs/myso-rust-sdk/"
 license = "Apache-2.0"
 edition = "2021"
 readme = "README.md"

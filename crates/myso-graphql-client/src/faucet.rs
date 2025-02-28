@@ -1,9 +1,9 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-use _types::Address;
-use _types::ObjectId;
-use _types::TransactionDigest;
+use myso_types::Address;
+use myso_types::ObjectId;
+use myso_types::TransactionDigest;
 
 use anyhow::anyhow;
 use anyhow::bail;
@@ -16,8 +16,8 @@ use std::time::Duration;
 use tracing::error;
 use tracing::info;
 
-pub const FAUCET_DEVNET_HOST: &str = "https://faucet.devnet..io";
-pub const FAUCET_TESTNET_HOST: &str = "https://faucet.testnet..io";
+pub const FAUCET_DEVNET_HOST: &str = "https://faucet.devnet.myso.io";
+pub const FAUCET_TESTNET_HOST: &str = "https://faucet.testnet.myso.io";
 pub const FAUCET_LOCAL_HOST: &str = "http://localhost:9123";
 
 const FAUCET_REQUEST_TIMEOUT: Duration = Duration::from_secs(120);

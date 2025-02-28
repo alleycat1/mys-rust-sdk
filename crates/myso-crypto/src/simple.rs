@@ -1,7 +1,7 @@
 use crate::SignatureError;
 use signature::Verifier;
-use _sdk_types::SimpleSignature;
-use _sdk_types::UserSignature;
+use myso_sdk_types::SimpleSignature;
+use myso_sdk_types::UserSignature;
 
 pub struct SimpleVerifier;
 
@@ -78,10 +78,10 @@ mod keypair {
     use crate::SignatureError;
     use signature::Signer;
     use signature::Verifier;
-    use _sdk_types::MultisigMemberPublicKey;
-    use _sdk_types::SignatureScheme;
-    use _sdk_types::SimpleSignature;
-    use _sdk_types::UserSignature;
+    use myso_sdk_types::MultisigMemberPublicKey;
+    use myso_sdk_types::SignatureScheme;
+    use myso_sdk_types::SimpleSignature;
+    use myso_sdk_types::UserSignature;
 
     pub struct SimpleKeypair {
         inner: InnerKeypair,

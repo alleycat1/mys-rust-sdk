@@ -130,7 +130,7 @@ impl std::fmt::LowerHex for Digest {
     }
 }
 
-// Unfortunately 's binary representation of digests is prefixed with its length meaning its
+// Unfortunately myso's binary representation of digests is prefixed with its length meaning its
 // serialized binary form is 33 bytes long (in bcs) vs a more compact 32 bytes.
 #[cfg(feature = "serde")]
 type DigestSerialization =

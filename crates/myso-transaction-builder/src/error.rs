@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use base64ct::Error as Base64Error;
-use _types::ObjectId;
+use myso_types::ObjectId;
 
 #[derive(thiserror::Error, Debug, Clone)]
 #[non_exhaustive]

@@ -3,12 +3,12 @@ use std::collections::HashMap;
 use crate::SignatureError;
 use poseidon::POSEIDON;
 use signature::Verifier;
-use _sdk_types::Claim;
-use _sdk_types::Jwk;
-use _sdk_types::JwkId;
-use _sdk_types::UserSignature;
-use _sdk_types::ZkLoginAuthenticator;
-use _sdk_types::ZkLoginInputs;
+use myso_sdk_types::Claim;
+use myso_sdk_types::Jwk;
+use myso_sdk_types::JwkId;
+use myso_sdk_types::UserSignature;
+use myso_sdk_types::ZkLoginAuthenticator;
+use myso_sdk_types::ZkLoginInputs;
 
 mod poseidon;
 mod verify;
@@ -245,10 +245,10 @@ fn verify_extended_claim(claim: &Claim, expected_key: &str) -> Result<String, Si
 
 pub(crate) fn zklogin_identifier_from_inputs(
     inputs: &ZkLoginInputs,
-) -> Result<_sdk_types::ZkLoginPublicIdentifier, SignatureError> {
+) -> Result<myso_sdk_types::ZkLoginPublicIdentifier, SignatureError> {
     const ISS: &str = "iss";
 
     let iss = verify_extended_claim(&inputs.iss_base64_details, ISS)?;
-    _sdk_types::ZkLoginPublicIdentifier::new(iss, inputs.address_seed.clone())
+    myso_sdk_types::ZkLoginPublicIdentifier::new(iss, inputs.address_seed.clone())
         .ok_or_else(|| SignatureError::from_source("invalid iss"))
 }

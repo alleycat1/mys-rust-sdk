@@ -79,21 +79,21 @@ use query_types::TransactionsFilter;
 use query_types::Validator;
 use streams::stream_paginated_query;
 
-use _types::framework::Coin;
-use _types::Address;
-use _types::CheckpointDigest;
-use _types::CheckpointSequenceNumber;
-use _types::CheckpointSummary;
-use _types::Event;
-use _types::MovePackage;
-use _types::Object;
-use _types::SignedTransaction;
-use _types::Transaction;
-use _types::TransactionDigest;
-use _types::TransactionEffects;
-use _types::TransactionKind;
-use _types::TypeTag;
-use _types::UserSignature;
+use myso_types::framework::Coin;
+use myso_types::Address;
+use myso_types::CheckpointDigest;
+use myso_types::CheckpointSequenceNumber;
+use myso_types::CheckpointSummary;
+use myso_types::Event;
+use myso_types::MovePackage;
+use myso_types::Object;
+use myso_types::SignedTransaction;
+use myso_types::Transaction;
+use myso_types::TransactionDigest;
+use myso_types::TransactionEffects;
+use myso_types::TransactionKind;
+use myso_types::TypeTag;
+use myso_types::UserSignature;
 
 use base64ct::Encoding;
 use cynic::serde;
@@ -112,9 +112,9 @@ use crate::error::Result;
 use crate::query_types::CheckpointTotalTxQuery;
 
 const DEFAULT_ITEMS_PER_PAGE: i32 = 10;
-const MAINNET_HOST: &str = "https://-mainnet.mystenlabs.com/graphql";
-const TESTNET_HOST: &str = "https://-testnet.mystenlabs.com/graphql";
-const DEVNET_HOST: &str = "https://-devnet.mystenlabs.com/graphql";
+const MAINNET_HOST: &str = "https://myso-mainnet.mystenlabs.com/graphql";
+const TESTNET_HOST: &str = "https://myso-testnet.mystenlabs.com/graphql";
+const DEVNET_HOST: &str = "https://myso-devnet.mystenlabs.com/graphql";
 const LOCAL_HOST: &str = "http://localhost:9125/graphql";
 static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
@@ -541,7 +541,7 @@ impl Client {
     // ===========================================================================
 
     /// Get the balance of all the coins owned by address for the provided coin type.
-    /// Coin type will default to `0x2::coin::Coin<0x2::::MYSO>` if not provided.
+    /// Coin type will default to `0x2::coin::Coin<0x2::myso::MYSO>` if not provided.
     pub async fn balance(&self, address: Address, coin_type: Option<&str>) -> Result<Option<u128>> {
         let operation = BalanceQuery::build(BalanceArgs {
             address,
@@ -570,7 +570,7 @@ impl Client {
     /// Get the list of coins for the specified address.
     ///
     /// If `coin_type` is not provided, it will default to `0x2::coin::Coin`, which will return all
-    /// coins. For MYSO coin, pass in the coin type: `0x2::coin::Coin<0x2::::MYSO>`.
+    /// coins. For MYSO coin, pass in the coin type: `0x2::coin::Coin<0x2::myso::MYSO>`.
     pub async fn coins<'a>(
         &self,
         owner: Address,
@@ -603,7 +603,7 @@ impl Client {
     /// Get the list of coins for the specified address as a stream.
     ///
     /// If `coin_type` is not provided, it will default to `0x2::coin::Coin`, which will return all
-    /// coins. For MYSO coin, pass in the coin type: `0x2::coin::Coin<0x2::::MYSO>`.
+    /// coins. For MYSO coin, pass in the coin type: `0x2::coin::Coin<0x2::myso::MYSO>`.
     pub async fn coins_stream(
         &self,
         address: Address,
@@ -743,7 +743,7 @@ impl Client {
     /// # Example
     /// ```rust,ignore
     ///
-    /// let client = _graphql_client::Client::new_devnet();
+    /// let client = myso_graphql_client::Client::new_devnet();
     /// let address = Address::from_str("0x5").unwrap();
     /// let df = client.dynamic_field_with_name(address, "u64", 2u64).await.unwrap();
     ///
@@ -1011,7 +1011,7 @@ impl Client {
                 .transpose()?;
 
             let object = bcs
-                .map(|b| bcs::from_bytes::<_types::Object>(&b))
+                .map(|b| bcs::from_bytes::<myso_types::Object>(&b))
                 .transpose()?;
 
             Ok(object)
@@ -1070,7 +1070,7 @@ impl Client {
                 .collect::<Result<Vec<_>, base64ct::Error>>()?;
             let objects = bcs
                 .iter()
-                .map(|b| bcs::from_bytes::<_types::Object>(b))
+                .map(|b| bcs::from_bytes::<myso_types::Object>(b))
                 .collect::<Result<Vec<_>, bcs::Error>>()?;
 
             Ok(Page::new(page_info, objects))
@@ -1685,7 +1685,7 @@ impl Client {
     // ===========================================================================
 
     /// Get the address for the provided MySons domain name.
-    pub async fn resolve_ns_to_address(&self, domain: &str) -> Result<Option<Address>> {
+    pub async fn resolve_mysons_to_address(&self, domain: &str) -> Result<Option<Address>> {
         let operation = ResolveMySonsQuery::build(ResolveMySonsQueryArgs { name: domain });
 
         let response = self.run_query(&operation).await?;
@@ -1695,12 +1695,12 @@ impl Client {
         }
         Ok(response
             .data
-            .and_then(|d| d.resolve_ns_address)
+            .and_then(|d| d.resolve_mysons_address)
             .map(|a| a.address))
     }
 
     /// Get the default MySons domain name for the provided address.
-    pub async fn default_ns_name(&self, address: Address) -> Result<Option<String>> {
+    pub async fn default_mysons_name(&self, address: Address) -> Result<Option<String>> {
         let operation = DefaultMySonsNameQuery::build(DefaultMySonsNameQueryArgs { address });
 
         let response = self.run_query(&operation).await?;
@@ -1711,7 +1711,7 @@ impl Client {
         Ok(response
             .data
             .and_then(|d| d.address)
-            .and_then(|a| a.default_ns_name))
+            .and_then(|a| a.default_mysons_name))
     }
 }
 
@@ -1720,8 +1720,8 @@ impl Client {
 mod tests {
     use base64ct::Encoding;
     use futures::StreamExt;
-    use _types::Ed25519PublicKey;
-    use _types::TypeTag;
+    use myso_types::Ed25519PublicKey;
+    use myso_types::TypeTag;
 
     use crate::faucet::FaucetClient;
     use crate::BcsName;
@@ -1846,7 +1846,7 @@ mod tests {
     #[tokio::test]
     async fn test_coin_metadata_query() {
         let client = test_client();
-        let cm = client.coin_metadata("0x2::::MYSO").await;
+        let cm = client.coin_metadata("0x2::myso::MYSO").await;
         assert!(
             cm.is_ok(),
             "Coin metadata query failed for {} network",
@@ -2076,7 +2076,7 @@ mod tests {
     #[tokio::test]
     async fn test_total_supply() {
         let client = test_client();
-        let ts = client.total_supply("0x2::::MYSO").await;
+        let ts = client.total_supply("0x2::myso::MYSO").await;
         assert!(
             ts.is_ok(),
             "Total supply query failed for {} network. Error: {}",
@@ -2200,7 +2200,7 @@ mod tests {
     #[ignore] // don't know which name is not malformed
     async fn test_package_by_name() {
         let client = Client::new_testnet();
-        let package = client.package_by_name("@").await;
+        let package = client.package_by_name("myso@myso").await;
         assert!(package.is_ok());
     }
 

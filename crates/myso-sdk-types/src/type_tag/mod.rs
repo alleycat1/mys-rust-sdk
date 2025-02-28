@@ -135,14 +135,14 @@ pub struct StructTag {
 
 impl StructTag {
     pub fn gas_coin() -> Self {
-        let  = Self {
+        let myso = Self {
             address: Address::TWO,
-            module: Identifier::new("").unwrap(),
+            module: Identifier::new("myso").unwrap(),
             name: Identifier::new("MYSO").unwrap(),
             type_params: vec![],
         };
 
-        Self::coin(TypeTag::Struct(Box::new()))
+        Self::coin(TypeTag::Struct(Box::new(myso)))
     }
 
     pub fn coin(type_tag: TypeTag) -> Self {
@@ -154,7 +154,7 @@ impl StructTag {
         }
     }
 
-    pub fn staked_() -> Self {
+    pub fn staked_myso() -> Self {
         Self {
             address: Address::THREE,
             module: Identifier::new("staking_pool").unwrap(),

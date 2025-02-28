@@ -1,6 +1,6 @@
 # MySo Sdk
 
-A rust Sdk for integrating with the [MySo blockchain](https://docs..io/).
+A rust Sdk for integrating with the [MySo blockchain](https://docs.myso.io/).
 
 > [!NOTE]
 > This is project is under development and many features may still be under
@@ -21,18 +21,18 @@ A few of the project's high-level goals are as follows:
 
 In an effort to be modular, functionality is split between a number of crates.
 
-* [`-sdk-types`](crates/-sdk-types)
-    [![-sdk-types on crates.io](https://img.shields.io/crates/v/-sdk-types)](https://crates.io/crates/-sdk-types)
-    [![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/-sdk-types)
-    [![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/-rust-sdk/_sdk_types/)
-* [`-crypto`](crates/-crypto)
-    [![-crypto on crates.io](https://img.shields.io/crates/v/-crypto)](https://crates.io/crates/-crypto)
-    [![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/-crypto)
-    [![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/-rust-sdk/_crypto/)
-* [`-graphql-client`](crates/-crypto)
-    [![-graphql-client on crates.io](https://img.shields.io/crates/v/-graphql-client)](https://crates.io/crates/-graphql-client)
-    [![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/-graphql-client)
-    [![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/-rust-sdk/-graphql-client/)
+* [`myso-sdk-types`](crates/myso-sdk-types)
+    [![myso-sdk-types on crates.io](https://img.shields.io/crates/v/myso-sdk-types)](https://crates.io/crates/myso-sdk-types)
+    [![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/myso-sdk-types)
+    [![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/myso-rust-sdk/myso_sdk_types/)
+* [`myso-crypto`](crates/myso-crypto)
+    [![myso-crypto on crates.io](https://img.shields.io/crates/v/myso-crypto)](https://crates.io/crates/myso-crypto)
+    [![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/myso-crypto)
+    [![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/myso-rust-sdk/myso_crypto/)
+* [`myso-graphql-client`](crates/myso-crypto)
+    [![myso-graphql-client on crates.io](https://img.shields.io/crates/v/myso-graphql-client)](https://crates.io/crates/myso-graphql-client)
+    [![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/myso-graphql-client)
+    [![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/myso-rust-sdk/myso-graphql-client/)
 
 ## License
 

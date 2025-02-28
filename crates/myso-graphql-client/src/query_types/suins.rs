@@ -16,7 +16,7 @@ use crate::query_types::Address as SdkAddress;
 )]
 pub struct ResolveMySonsQuery {
     #[arguments(domain: $name)]
-    pub resolve_ns_address: Option<DomainAddress>,
+    pub resolve_mysons_address: Option<DomainAddress>,
 }
 
 #[derive(cynic::QueryVariables, Debug)]
@@ -49,5 +49,5 @@ pub struct DefaultMySonsNameQueryArgs {
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(schema = "rpc", graphql_type = "Address")]
 pub struct AddressDefaultMySons {
-    pub default_ns_name: Option<String>,
+    pub default_mysons_name: Option<String>,
 }
