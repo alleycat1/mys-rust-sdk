@@ -1,64 +1,59 @@
 # Set the default target of this Makefile
 .PHONY: all
-all:: ci ## Default target, runs the CI process
+all:: ci
 
 .PHONY: check-features
-check-features: ## Check feature flags for crates
-	$(MAKE) -C crates/myso-sdk-types check-features
-	$(MAKE) -C crates/myso-crypto check-features
+check-features:
+	$(MAKE) -C crates/-sdk-types check-features
+	$(MAKE) -C crates/-crypto check-features
 
 .PHONY: check-fmt
-check-fmt: ## Check code formatting
-	cargo fmt -- --config imports_granularity=Item --config format_code_in_doc_comments=true --check
+check-fmt:
+	cargo fmt -- --config imports_granularity=Item --check
 
 .PHONY: fmt
-fmt: ## Format code
-	cargo fmt -- --config imports_granularity=Item --config format_code_in_doc_comments=true
+fmt:
+	cargo fmt -- --config imports_granularity=Item
 
 .PHONY: clippy
-clippy: ## Run Clippy linter
+clippy:
 	cargo clippy --all-features --all-targets
 
 .PHONY: test
-test: ## Run unit tests
-	cargo nextest run --all-features -p myso-sdk-types -p myso-crypto
-	cargo test --all-features --doc
+test:
+	cargo nextest run --all-features -p -sdk-types -p -crypto
+	cargo test --doc
 
-package_%.json: crates/myso-transaction-builder/tests/%/Move.toml crates/myso-transaction-builder/tests/%/sources/*.move ## Generate JSON files for tests
-	cd crates/myso-transaction-builder/tests/$(*F) && myso move build --ignore-chain --dump-bytecode-as-base64 > ../../$@
+package_%.json: crates/-transaction-builder/tests/%/Move.toml crates/-transaction-builder/tests/%/sources/*.move
+	cd crates/-transaction-builder/tests/$(*F) &&  move build --ignore-chain --dump-bytecode-as-base64 > ../../$@
 
 .PHONY: test-with-localnet
-test-with-localnet: package_test_example_v1.json package_test_example_v2.json ## Run tests with localnet
-	cargo nextest run -p myso-graphql-client -p myso-transaction-builder
+test-with-localnet: package_test_example_v1.json package_test_example_v2.json
+	cargo nextest run -p -graphql-client -p -transaction-builder
 
 .PHONY: wasm
-wasm: ## Build WASM modules
-	$(MAKE) -C crates/myso-sdk-types wasm
-	$(MAKE) -C crates/myso-crypto wasm
+wasm:
+	$(MAKE) -C crates/-sdk-types wasm
+	$(MAKE) -C crates/-crypto wasm
 
 .PHONY: doc
-doc: ## Generate documentation
-	RUSTDOCFLAGS="-Dwarnings --cfg=doc_cfg -Zunstable-options --generate-link-to-definition" RUSTC_BOOTSTRAP=1 cargo doc --all-features --no-deps
+doc:
+	RUSTDOCFLAGS="--cfg=doc_cfg -Zunstable-options --generate-link-to-definition" RUSTC_BOOTSTRAP=1 cargo doc --all-features --no-deps
 
 .PHONY: doc-open
-doc-open: ## Generate and open documentation
+doc-open:
 	RUSTDOCFLAGS="--cfg=doc_cfg -Zunstable-options --generate-link-to-definition" RUSTC_BOOTSTRAP=1 cargo doc --all-features --no-deps --open
 
 .PHONY: ci
-ci: check-features check-fmt test wasm ## Run the full CI process
+ci: check-features check-fmt test wasm
 
 .PHONY: ci-full
-ci-full: ci doc ## Run the full CI process and generate documentation
+ci-full: ci doc
 
 .PHONY: clean
-clean: ## Clean build artifacts
+clean:
 	cargo clean
 
 .PHONY: clean-all
-clean-all: clean ## Clean all generated files, including those ignored by Git. Force removal.
-	git clean -dXf
-
-.PHONY: help
-help: ## Show this help
-	@echo "Available targets:"
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+clean-all: clean
+	git clean -dX

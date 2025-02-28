@@ -12,18 +12,17 @@ use winnow::combinator::separated;
 use winnow::stream::AsChar;
 use winnow::token::one_of;
 use winnow::token::take_while;
-use winnow::ModalParser;
-use winnow::ModalResult;
+use winnow::PResult;
 use winnow::Parser;
 
 // static ALLOWED_IDENTIFIERS: &str = r"(?:[a-zA-Z][a-zA-Z0-9_]*)|(?:_[a-zA-Z0-9_]+)";
 static MAX_IDENTIFIER_LENGTH: usize = 128;
 
-pub(super) fn parse_identifier(mut input: &str) -> ModalResult<&str> {
+pub(super) fn parse_identifier(mut input: &str) -> PResult<&str> {
     (identifier, eof).take().parse_next(&mut input)
 }
 
-fn identifier<'s>(input: &mut &'s str) -> ModalResult<&'s str> {
+fn identifier<'s>(input: &mut &'s str) -> PResult<&'s str> {
     alt((
         (one_of(|c: char| c.is_alpha()), valid_remainder(0)),
         ('_', valid_remainder(1)),
@@ -34,7 +33,7 @@ fn identifier<'s>(input: &mut &'s str) -> ModalResult<&'s str> {
 
 fn valid_remainder<'a>(
     minimum: usize,
-) -> impl ModalParser<&'a str, &'a str, winnow::error::ContextError> {
+) -> impl Parser<&'a str, &'a str, winnow::error::ContextError> {
     move |input: &mut &'a str| {
         take_while(
             // Use .. instead of ..= since we've already processed a single character
@@ -45,17 +44,17 @@ fn valid_remainder<'a>(
     }
 }
 
-fn parse_address<'s>(input: &mut &'s str) -> ModalResult<&'s str> {
+fn parse_address<'s>(input: &mut &'s str) -> PResult<&'s str> {
     ("0x", take_while(1..=64, AsChar::is_hex_digit))
         .take()
         .parse_next(input)
 }
 
-pub(super) fn parse_type_tag(mut input: &str) -> ModalResult<TypeTag> {
+pub(super) fn parse_type_tag(mut input: &str) -> PResult<TypeTag> {
     (type_tag, eof).parse_next(&mut input).map(|(t, _)| t)
 }
 
-fn type_tag(input: &mut &str) -> ModalResult<TypeTag> {
+fn type_tag(input: &mut &str) -> PResult<TypeTag> {
     alt((
         "u8".value(TypeTag::U8),
         "u16".value(TypeTag::U16),
@@ -72,11 +71,11 @@ fn type_tag(input: &mut &str) -> ModalResult<TypeTag> {
     .parse_next(input)
 }
 
-pub(super) fn parse_struct_tag(mut input: &str) -> ModalResult<StructTag> {
+pub(super) fn parse_struct_tag(mut input: &str) -> PResult<StructTag> {
     (struct_tag, eof).parse_next(&mut input).map(|(s, _)| s)
 }
 
-fn struct_tag(input: &mut &str) -> ModalResult<StructTag> {
+fn struct_tag(input: &mut &str) -> PResult<StructTag> {
     let (address, _, module, _, name) = (
         parse_address.try_map(|s| s.parse::<Address>()),
         "::",
@@ -99,7 +98,7 @@ fn struct_tag(input: &mut &str) -> ModalResult<StructTag> {
     })
 }
 
-fn generics(input: &mut &str) -> ModalResult<Vec<TypeTag>> {
+fn generics(input: &mut &str) -> PResult<Vec<TypeTag>> {
     separated(1.., delimited(space0, type_tag, space0), ",").parse_next(input)
 }
 
@@ -152,7 +151,7 @@ mod tests {
             "0x1::__::__",
             "0x1::_bar::_BAR<0x2::_____::______fooo______>",
             "0x1::__::__<0x2::_____::______fooo______, 0xff::Bar____::_______foo>",
-            "0x5d32d749705c5f07c741f1818df3db466128bf01677611a959b03040ac5dc774::slippage::HopSwapEvent<0x2::myso::MYSO, 0x3c86bba6a3d3ce958615ae51cc5604f58956b1583323f664cf5f048da0fcbb19::_spd::_SPD>",
+            "0x5d32d749705c5f07c741f1818df3db466128bf01677611a959b03040ac5dc774::slippage::HopSwapEvent<0x2::::MYSO, 0x3c86bba6a3d3ce958615ae51cc5604f58956b1583323f664cf5f048da0fcbb19::_spd::_SPD>",
         ] {
             assert!(parse_type_tag(s).is_ok(), "Failed to parse tag {}", s);
         }
@@ -188,7 +187,7 @@ mod tests {
         "0x1::__::__",
         "0x1::_bar::_BAR<0x2::_____::______fooo______>",
         "0x1::__::__<0x2::_____::______fooo______, 0xff::Bar____::_______foo>",
-        "0x5d32d749705c5f07c741f1818df3db466128bf01677611a959b03040ac5dc774::slippage::HopSwapEvent<0x2::myso::MYSO, 0x3c86bba6a3d3ce958615ae51cc5604f58956b1583323f664cf5f048da0fcbb19::_spd::_SPD>",
+        "0x5d32d749705c5f07c741f1818df3db466128bf01677611a959b03040ac5dc774::slippage::HopSwapEvent<0x2::::MYSO, 0x3c86bba6a3d3ce958615ae51cc5604f58956b1583323f664cf5f048da0fcbb19::_spd::_SPD>",
         ];
         for s in valid {
             let mut input = s;

@@ -1,8 +1,8 @@
 [package]
-name = "myso-sdk-types"
-version = "0.0.2"
+name = "-sdk-types"
+version = "0.0.1"
 authors = ["Brandon Williams <brandon@mystenlabs.com>"]
-repository = "https://github.com/mystenlabs/myso-rust-sdk/"
+repository = "https://github.com/mystenlabs/-rust-sdk/"
 license = "Apache-2.0"
 edition = "2021"
 readme = "README.md"
@@ -34,7 +34,7 @@ bs58 = "0.5.1"
 hex = "0.4.3"
 roaring = { version = "0.10.9", default-features = false }
 bnum = "0.12.0"
-winnow = "0.7"
+winnow = "0.6.20"
 
 # Serialization and Deserialization support
 serde = { version = "1.0.210", optional = true }
@@ -57,6 +57,7 @@ test-strategy = { version = "0.4", optional = true }
 bcs = "0.1.6"
 serde_json = "1.0.128"
 num-bigint = "0.4.6"
+jsonschema = { version = "0.20", default-features = false }
 paste = "1.0.15"
 
 [target.wasm32-unknown-unknown.dev-dependencies]

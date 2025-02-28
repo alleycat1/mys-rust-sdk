@@ -1,4 +1,4 @@
-//! Rust definitions of move/myso framework types.
+//! Rust definitions of move/ framework types.
 
 use super::Object;
 use super::ObjectId;

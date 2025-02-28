@@ -13,7 +13,7 @@ clippy:
 .PHONY: test
 test:
 	cargo nextest run --all-features
-	cargo test --all-features --doc
+	cargo test --doc
 
 .PHONY: wasm
 wasm:

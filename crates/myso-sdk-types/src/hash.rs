@@ -5,23 +5,19 @@ use blake2::Digest as DigestTrait;
 
 type Blake2b256 = blake2::Blake2b<blake2::digest::consts::U32>;
 
-/// A Blake2b256 Hasher
 #[derive(Debug, Default)]
 pub struct Hasher(Blake2b256);
 
 impl Hasher {
-    /// Initialize a new Blake2b256 Hasher instance.
     pub fn new() -> Self {
         Self(Blake2b256::new())
     }
 
-    /// Process the provided data, updating internal state.
     pub fn update<T: AsRef<[u8]>>(&mut self, data: T) {
         self.0.update(data)
     }
 
-    /// Finalize hashing, consuming the Hasher instance and returning the resultant hash or
-    /// `Digest`.
+    /// Retrieve result and consume hasher instance.
     pub fn finalize(self) -> Digest {
         let mut buf = [0; Digest::LENGTH];
         let result = self.0.finalize();
@@ -31,8 +27,6 @@ impl Hasher {
         Digest::new(buf)
     }
 
-    /// Convenience function for creating a new Hasher instance, hashing the provided data, and
-    /// returning the resultant `Digest`
     pub fn digest<T: AsRef<[u8]>>(data: T) -> Digest {
         let mut hasher = Self::new();
         hasher.update(data);
@@ -51,29 +45,7 @@ impl std::io::Write for Hasher {
 }
 
 impl crate::Ed25519PublicKey {
-    /// Derive an `Address` from this Public Key
-    ///
-    /// An `Address` can be derived from an `Ed25519PublicKey` by hashing the bytes of the public
-    /// key prefixed with the Ed25519 `SignatureScheme` flag (`0x00`).
-    ///
-    /// `hash( 0x00 || 32-byte ed25519 public key)`
-    ///
-    /// ```
-    /// use myso_sdk_types::hash::Hasher;
-    /// use myso_sdk_types::Address;
-    /// use myso_sdk_types::Ed25519PublicKey;
-    ///
-    /// let public_key_bytes = [0; 32];
-    /// let mut hasher = Hasher::new();
-    /// hasher.update([0x00]); // The SignatureScheme flag for Ed25519 is `0`
-    /// hasher.update(public_key_bytes);
-    /// let address = Address::new(hasher.finalize().into_inner());
-    /// println!("Address: {}", address);
-    ///
-    /// let public_key = Ed25519PublicKey::new(public_key_bytes);
-    /// assert_eq!(address, public_key.derive_address());
-    /// ```
-    pub fn derive_address(&self) -> Address {
+    pub fn to_address(&self) -> Address {
         let mut hasher = Hasher::new();
         self.write_into_hasher(&mut hasher);
         let digest = hasher.finalize();
@@ -87,29 +59,7 @@ impl crate::Ed25519PublicKey {
 }
 
 impl crate::Secp256k1PublicKey {
-    /// Derive an `Address` from this Public Key
-    ///
-    /// An `Address` can be derived from a `Secp256k1PublicKey` by hashing the bytes of the public
-    /// key prefixed with the Secp256k1 `SignatureScheme` flag (`0x01`).
-    ///
-    /// `hash( 0x01 || 33-byte secp256k1 public key)`
-    ///
-    /// ```
-    /// use myso_sdk_types::hash::Hasher;
-    /// use myso_sdk_types::Address;
-    /// use myso_sdk_types::Secp256k1PublicKey;
-    ///
-    /// let public_key_bytes = [0; 33];
-    /// let mut hasher = Hasher::new();
-    /// hasher.update([0x01]); // The SignatureScheme flag for Secp256k1 is `1`
-    /// hasher.update(public_key_bytes);
-    /// let address = Address::new(hasher.finalize().into_inner());
-    /// println!("Address: {}", address);
-    ///
-    /// let public_key = Secp256k1PublicKey::new(public_key_bytes);
-    /// assert_eq!(address, public_key.derive_address());
-    /// ```
-    pub fn derive_address(&self) -> Address {
+    pub fn to_address(&self) -> Address {
         let mut hasher = Hasher::new();
         self.write_into_hasher(&mut hasher);
         let digest = hasher.finalize();
@@ -123,29 +73,7 @@ impl crate::Secp256k1PublicKey {
 }
 
 impl crate::Secp256r1PublicKey {
-    /// Derive an `Address` from this Public Key
-    ///
-    /// An `Address` can be derived from a `Secp256r1PublicKey` by hashing the bytes of the public
-    /// key prefixed with the Secp256r1 `SignatureScheme` flag (`0x02`).
-    ///
-    /// `hash( 0x02 || 33-byte secp256r1 public key)`
-    ///
-    /// ```
-    /// use myso_sdk_types::hash::Hasher;
-    /// use myso_sdk_types::Address;
-    /// use myso_sdk_types::Secp256r1PublicKey;
-    ///
-    /// let public_key_bytes = [0; 33];
-    /// let mut hasher = Hasher::new();
-    /// hasher.update([0x02]); // The SignatureScheme flag for Secp256r1 is `2`
-    /// hasher.update(public_key_bytes);
-    /// let address = Address::new(hasher.finalize().into_inner());
-    /// println!("Address: {}", address);
-    ///
-    /// let public_key = Secp256r1PublicKey::new(public_key_bytes);
-    /// assert_eq!(address, public_key.derive_address());
-    /// ```
-    pub fn derive_address(&self) -> Address {
+    pub fn to_address(&self) -> Address {
         let mut hasher = Hasher::new();
         self.write_into_hasher(&mut hasher);
         let digest = hasher.finalize();
@@ -159,12 +87,8 @@ impl crate::Secp256r1PublicKey {
 }
 
 impl crate::ZkLoginPublicIdentifier {
-    /// Derive an `Address` from this `ZkLoginPublicIdentifier` by hashing the byte length of the
-    /// `iss` followed by the `iss` bytes themselves and the full 32 byte `address_seed` value, all
-    /// prefixed with the zklogin `SignatureScheme` flag (`0x05`).
-    ///
-    /// `hash( 0x05 || iss_bytes_len || iss_bytes || 32_byte_address_seed )`
-    pub fn derive_address_padded(&self) -> Address {
+    /// Define as iss_bytes_len || iss_bytes || padded_32_byte_address_seed.
+    pub fn to_address_padded(&self) -> Address {
         let mut hasher = Hasher::new();
         self.write_into_hasher_padded(&mut hasher);
         let digest = hasher.finalize();
@@ -178,12 +102,8 @@ impl crate::ZkLoginPublicIdentifier {
         hasher.update(self.address_seed().padded());
     }
 
-    /// Derive an `Address` from this `ZkLoginPublicIdentifier` by hashing the byte length of the
-    /// `iss` followed by the `iss` bytes themselves and the `address_seed` bytes with any leading
-    /// zero-bytes stripped, all prefixed with the zklogin `SignatureScheme` flag (`0x05`).
-    ///
-    /// `hash( 0x05 || iss_bytes_len || iss_bytes || unpadded_32_byte_address_seed )`
-    pub fn derive_address_unpadded(&self) -> Address {
+    /// Define as iss_bytes_len || iss_bytes || unpadded_32_byte_address_seed.
+    pub fn to_address_unpadded(&self) -> Address {
         let mut hasher = Hasher::new();
         hasher.update([self.scheme().to_u8()]);
         hasher.update([self.iss().len() as u8]); // TODO enforce iss is less than 255 bytes
@@ -192,36 +112,10 @@ impl crate::ZkLoginPublicIdentifier {
         let digest = hasher.finalize();
         Address::new(digest.into_inner())
     }
-
-    /// Provides an iterator over the addresses that correspond to this zklogin authenticator.
-    ///
-    /// In the majority of instances this will only yield a single address, except for the
-    /// instances where the `address_seed` value has a leading zero-byte, in such cases the
-    /// returned iterator will yield two addresses.
-    pub fn derive_address(&self) -> impl Iterator<Item = Address> {
-        let main_address = self.derive_address_padded();
-        let mut addresses = [Some(main_address), None];
-        // If address_seed starts with a zero byte then we know that this zklogin authenticator has
-        // two addresses
-        if self.address_seed().padded()[0] == 0 {
-            let secondary_address = self.derive_address_unpadded();
-
-            addresses[1] = Some(secondary_address);
-        }
-
-        addresses.into_iter().flatten()
-    }
 }
 
 impl crate::PasskeyPublicKey {
-    /// Derive an `Address` from this Passkey Public Key
-    ///
-    /// An `Address` can be derived from a `PasskeyPublicKey` by hashing the bytes of the
-    /// `Secp256r1PublicKey` that corresponds to this passkey prefixed with the Passkey
-    /// `SignatureScheme` flag (`0x06`).
-    ///
-    /// `hash( 0x06 || 33-byte secp256r1 public key)`
-    pub fn derive_address(&self) -> Address {
+    pub fn to_address(&self) -> Address {
         let mut hasher = Hasher::new();
         self.write_into_hasher(&mut hasher);
         let digest = hasher.finalize();
@@ -235,24 +129,15 @@ impl crate::PasskeyPublicKey {
 }
 
 impl crate::MultisigCommittee {
-    /// Derive an `Address` from this MultisigCommittee.
+    /// Derive an Address from a MultisigCommittee. A MultiSig address
+    /// is defined as the 32-byte Blake2b hash of serializing the flag, the
+    /// threshold, concatenation of all n flag, public keys and
+    /// its weight. `flag_MultiSig || threshold || flag_1 || pk_1 || weight_1
+    /// || ... || flag_n || pk_n || weight_n`.
     ///
-    /// A MultiSig address
-    /// is defined as the 32-byte Blake2b hash of serializing the `SignatureScheme` flag (0x03), the
-    /// threshold (in little endian), and the concatenation of all n flag, public keys and
-    /// its weight.
-    ///
-    /// `hash(0x03 || threshold || flag_1 || pk_1 || weight_1
-    /// || ... || flag_n || pk_n || weight_n)`.
-    ///
-    /// When flag_i is ZkLogin, the pk_i for the [`ZkLoginPublicIdentifier`] refers to the same
-    /// input used when deriving the address using the
-    /// [`ZkLoginPublicIdentifier::derive_address_padded`] method (using the full 32-byte
-    /// `address_seed` value).
-    ///
-    /// [`ZkLoginPublicIdentifier`]: crate::ZkLoginPublicIdentifier
-    /// [`ZkLoginPublicIdentifier::derive_address_padded`]: crate::ZkLoginPublicIdentifier::derive_address_padded
-    pub fn derive_address(&self) -> Address {
+    /// When flag_i is ZkLogin, pk_i refers to [struct ZkLoginPublicIdentifier]
+    /// derived from padded address seed in bytes and iss.
+    pub fn to_address(&self) -> Address {
         use crate::MultisigMemberPublicKey::*;
 
         let mut hasher = Hasher::new();
@@ -294,9 +179,6 @@ mod type_digest {
     use crate::TransactionEventsDigest;
 
     impl Object {
-        /// Calculate the digest of this `Object`
-        ///
-        /// This is done by hashing the BCS bytes of this `Object` prefixed
         pub fn digest(&self) -> ObjectDigest {
             const SALT: &str = "Object::";
             let digest = type_digest(SALT, self);
@@ -397,9 +279,9 @@ mod signing_message {
     }
 }
 
-/// A 1-byte domain separator for deriving `ObjectId`s in MySo. It is starting from `0xf0` to ensure
-/// no hashing collision for any ObjectId vs Address which is derived as the hash of `flag ||
-/// pubkey`.
+/// A 1-byte domain separator for hashing Object ID in MySo. It is starting from 0xf0
+/// to ensure no hashing collision for any ObjectId vs Address which is derived
+/// as the hash of `flag || pubkey`.
 #[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 #[repr(u8)]

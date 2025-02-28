@@ -1,8 +1,8 @@
 [package]
-name = "myso-crypto"
-version = "0.0.2"
+name = "-crypto"
+version = "0.0.1"
 authors = ["Brandon Williams <brandon@mystenlabs.com>"]
-repository = "https://github.com/mystenlabs/myso-rust-sdk/"
+repository = "https://github.com/mystenlabs/-rust-sdk/"
 license = "Apache-2.0"
 edition = "2021"
 readme = "README.md"
@@ -54,7 +54,7 @@ pem = [
 
 [dependencies]
 signature = "2.2"
-myso-sdk-types = { version = "0.0.2", path = "../myso-sdk-types", default-features = false, features = ["hash", "serde"] }
+-sdk-types = { version = "0.0.1", path = "../-sdk-types", default-features = false, features = ["hash", "serde"] }
 
 # RNG support
 rand_core = { version = "0.6.4", optional = true }

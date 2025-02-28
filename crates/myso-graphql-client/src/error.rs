@@ -6,9 +6,9 @@ use std::num::TryFromIntError;
 
 use cynic::GraphQlError;
 
-use myso_types::AddressParseError;
-use myso_types::DigestParseError;
-use myso_types::TypeParseError;
+use _types::AddressParseError;
+use _types::DigestParseError;
+use _types::TypeParseError;
 
 type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
 

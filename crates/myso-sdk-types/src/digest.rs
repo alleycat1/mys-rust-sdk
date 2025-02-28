@@ -1,16 +1,4 @@
-/// A 32-byte Blake2b256 hash output.
-///
-/// # BCS
-///
-/// A `Digest`'s BCS serialized form is defined by the following:
-///
-/// ```text
-/// digest = %x20 32OCTET
-/// ```
-///
-/// Due to historical reasons, even though a `Digest` has a fixed-length of 32, MySo's binary
-/// representation of a `Digest` is prefixed with its length meaning its serialized binary form (in
-/// bcs) is 33 bytes long vs a more compact 32 bytes.
+/// A representation of a 32 byte digest
 #[derive(Clone, Copy, Default, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(
     feature = "serde",
@@ -22,17 +10,13 @@ pub struct Digest(
 );
 
 impl Digest {
-    /// A constant representing the length of a digest in bytes.
     pub const LENGTH: usize = 32;
-    /// A constant representing a zero digest.
     pub const ZERO: Self = Self([0; Self::LENGTH]);
 
-    /// Generates a new digest from the provided 32 byte array containing [`u8`] values.
     pub const fn new(digest: [u8; Self::LENGTH]) -> Self {
         Self(digest)
     }
 
-    /// Generates a new digest from the provided random number generator.
     #[cfg(feature = "rand")]
     #[cfg_attr(doc_cfg, doc(cfg(feature = "rand")))]
     pub fn generate<R>(mut rng: R) -> Self
@@ -44,22 +28,18 @@ impl Digest {
         Self::new(buf)
     }
 
-    /// Returns a slice to the inner array representation of this digest.
     pub const fn inner(&self) -> &[u8; Self::LENGTH] {
         &self.0
     }
 
-    /// Returns the inner array representation of this digest.
     pub const fn into_inner(self) -> [u8; Self::LENGTH] {
         self.0
     }
 
-    /// Returns a slice of bytes representing the digest.
     pub const fn as_bytes(&self) -> &[u8] {
         &self.0
     }
 
-    /// Decodes a digest from a Base58 encoded string.
     pub fn from_base58<T: AsRef<[u8]>>(base58: T) -> Result<Self, DigestParseError> {
         let mut buf = [0; Self::LENGTH];
 
@@ -71,12 +51,10 @@ impl Digest {
         Ok(Self(buf))
     }
 
-    /// Returns a Base58 encoded string representation of this digest.
     pub fn to_base58(&self) -> String {
         self.to_string()
     }
 
-    /// Generates a digest from bytes.
     pub fn from_bytes<T: AsRef<[u8]>>(bytes: T) -> Result<Self, DigestParseError> {
         <[u8; Self::LENGTH]>::try_from(bytes.as_ref())
             .map_err(|_| DigestParseError)
@@ -152,7 +130,7 @@ impl std::fmt::LowerHex for Digest {
     }
 }
 
-// Unfortunately myso's binary representation of digests is prefixed with its length meaning its
+// Unfortunately 's binary representation of digests is prefixed with its length meaning its
 // serialized binary form is 33 bytes long (in bcs) vs a more compact 32 bytes.
 #[cfg(feature = "serde")]
 type DigestSerialization =

@@ -1,5 +1,5 @@
 use signature::Signer;
-use myso_sdk_types::PersonalMessage;
+use _sdk_types::PersonalMessage;
 
 use crate::ed25519::Ed25519PrivateKey;
 use crate::MySoVerifier;

@@ -1,8 +1,8 @@
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 
-use myso_sdk_types::PersonalMessage;
-use myso_sdk_types::Transaction;
-use myso_sdk_types::UserSignature;
+use _sdk_types::PersonalMessage;
+use _sdk_types::Transaction;
+use _sdk_types::UserSignature;
 
 pub use signature::Error as SignatureError;
 pub use signature::Signer;

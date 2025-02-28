@@ -4,7 +4,7 @@
 use std::str::FromStr;
 
 use base64ct::Encoding;
-use myso_types::TypeTag;
+use _types::TypeTag;
 
 use crate::error;
 use crate::query_types::schema;
@@ -103,7 +103,11 @@ pub struct DynamicFieldName {
 }
 
 #[derive(cynic::QueryFragment, Debug)]
-#[cynic(schema = "rpc", graphql_type = "Owner", variables = "DynamicFieldArgs")]
+#[cynic(
+    schema = "rpc",
+    graphql_type = "Object",
+    variables = "DynamicFieldArgs"
+)]
 pub struct DynamicObjectField {
     #[arguments(name: $name)]
     pub dynamic_object_field: Option<DynamicField>,
@@ -112,7 +116,7 @@ pub struct DynamicObjectField {
 #[cynic(schema = "rpc", graphql_type = "Query", variables = "DynamicFieldArgs")]
 pub struct DynamicObjectFieldQuery {
     #[arguments(address: $address)]
-    pub owner: Option<DynamicObjectField>,
+    pub object: Option<DynamicObjectField>,
 }
 
 impl DynamicFieldValue {

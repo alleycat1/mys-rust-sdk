@@ -2,49 +2,16 @@ use super::SimpleSignature;
 use crate::checkpoint::EpochId;
 use crate::u256::U256;
 
-/// A zklogin authenticator
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// zklogin-bcs = bytes             ; contents are defined by <zklogin-authenticator>
-/// zklogin     = zklogin-flag
-///               zklogin-inputs
-///               u64               ; max epoch
-///               simple-signature    
-/// ```
-///
-/// Note: Due to historical reasons, signatures are serialized slightly different from the majority
-/// of the types in MySo. In particular if a signature is ever embedded in another structure it
-/// generally is serialized as `bytes` meaning it has a length prefix that defines the length of
-/// the completely serialized signature.
+/// An zk login authenticator with all the necessary fields.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct ZkLoginAuthenticator {
-    /// Zklogin proof and inputs required to perform proof verification.
     pub inputs: ZkLoginInputs,
-
-    /// Maximum epoch for which the proof is valid.
     pub max_epoch: EpochId,
-
-    /// User signature with the pubkey attested to by the provided proof.
     pub signature: SimpleSignature,
 }
 
-/// A zklogin groth16 proof and the required inputs to perform proof verification.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// zklogin-inputs = zklogin-proof
-///                  zklogin-claim
-///                  string              ; base64url-unpadded encoded JwtHeader
-///                  bn254-field-element ; address_seed
-/// ```
+/// All inputs required for the zk login proof verification and other public inputs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(
     feature = "serde",
@@ -53,40 +20,24 @@ pub struct ZkLoginAuthenticator {
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct ZkLoginInputs {
     pub proof_points: ZkLoginProof,
-    pub iss_base64_details: ZkLoginClaim,
+    pub iss_base64_details: Claim,
     pub header_base64: String,
     pub address_seed: Bn254FieldElement,
 }
 
-/// A claim of the iss in a zklogin proof
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// zklogin-claim = string u8
-/// ```
+/// A claim consists of value and index_mod_4.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(
     feature = "serde",
     derive(serde_derive::Serialize, serde_derive::Deserialize)
 )]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
-pub struct ZkLoginClaim {
+pub struct Claim {
     pub value: String,
     pub index_mod_4: u8,
 }
 
-/// A zklogin groth16 proof
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// zklogin-proof = circom-g1 circom-g2 circom-g1
-/// ```
+/// The struct for zk login proof.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(
     feature = "serde",
@@ -99,88 +50,24 @@ pub struct ZkLoginProof {
     pub c: CircomG1,
 }
 
-/// A G1 point
-///
-/// This represents the canonical decimal representation of the projective coordinates in Fq.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// circom-g1 = %x03 3(bn254-field-element)
-/// ```
+/// A G1 point in BN254 serialized as a vector of three strings which is the canonical decimal
+/// representation of the projective coordinates in Fq.
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct CircomG1(pub [Bn254FieldElement; 3]);
 
-/// A G2 point
-///
-/// This represents the canonical decimal representation of the coefficients of the projective
-/// coordinates in Fq2.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// circom-g2 = %x03 3(%x02 2(bn254-field-element))
-/// ```
+/// A G2 point in BN254 serialized as a vector of three vectors each being a vector of two strings
+/// which are the canonical decimal representation of the coefficients of the projective coordinates
+/// in Fq2.
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct CircomG2(pub [[Bn254FieldElement; 2]; 3]);
 
-/// Public Key equivalent for Zklogin authenticators
-///
-/// A `ZkLoginPublicIdentifier` is the equivalent of a public key for other account authenticators,
-/// and contains the information required to derive the onchain account [`Address`] for a Zklogin
-/// authenticator.
-///
-/// ## Note
-///
-/// Due to a historical bug that was introduced in the MySo Typescript SDK when the zklogin
-/// authenticator was first introduced, there are now possibly two "valid" addresses for each
-/// zklogin authenticator depending on the bit-pattern of the `address_seed` value.
-///
-/// The original bug incorrectly derived a zklogin's address by stripping any leading
-/// zero-bytes that could have been present in the 32-byte length `address_seed` value prior to
-/// hashing, leading to a different derived address. This incorrectly derived address was
-/// presented to users of various wallets, leading them to sending funds to these addresses
-/// that they couldn't access. Instead of letting these users lose any assets that were sent to
-/// these addresses, the MySo network decided to change the protocol to allow for a zklogin
-/// authenticator who's `address_seed` value had leading zero-bytes be authorized to sign for
-/// both the addresses derived from both the unpadded and padded `address_seed` value.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// zklogin-public-identifier-bcs = bytes ; where the contents are defined by
-///                                       ; <zklogin-public-identifier>
-///
-/// zklogin-public-identifier = zklogin-public-identifier-iss
-///                             address-seed
-///
-/// zklogin-public-identifier-unpadded = zklogin-public-identifier-iss
-///                                      address-seed-unpadded
-///
-/// ; The iss, or issuer, is a utf8 string that is less than 255 bytes long
-/// ; and is serialized with the iss's length in bytes as a u8 followed by
-/// ; the bytes of the iss
-/// zklogin-public-identifier-iss = u8 *255(OCTET)
-///
-/// ; A Bn254FieldElement serialized as a 32-byte big-endian value
-/// address-seed = 32(OCTET)
-///
-/// ; A Bn254FieldElement serialized as a 32-byte big-endian value
-/// ; with any leading zero bytes stripped
-/// address-seed-unpadded = %x00 / %x01-ff *31(OCTET)
-/// ```
-///
-/// [`Address`]: crate::Address
+/// A wrapper struct to retrofit in [enum PublicKey] for zkLogin.
+/// Useful to construct [struct MultiSigPublicKey].
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
+//TODO ensure iss is less than 255 bytes long
 pub struct ZkLoginPublicIdentifier {
     iss: String,
     address_seed: Bn254FieldElement,
@@ -204,19 +91,9 @@ impl ZkLoginPublicIdentifier {
     }
 }
 
-/// A JSON Web Key
-///
 /// Struct that contains info for a JWK. A list of them for different kids can
 /// be retrieved from the JWK endpoint (e.g. <https://www.googleapis.com/oauth2/v3/certs>).
 /// The JWK is used to verify the JWT token.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// jwk = string string string string
-/// ```
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(
     feature = "serde",
@@ -226,26 +103,15 @@ impl ZkLoginPublicIdentifier {
 pub struct Jwk {
     /// Key type parameter, <https://datatracker.ietf.org/doc/html/rfc7517#section-4.1>
     pub kty: String,
-
     /// RSA public exponent, <https://datatracker.ietf.org/doc/html/rfc7517#section-9.3>
     pub e: String,
-
     /// RSA modulus, <https://datatracker.ietf.org/doc/html/rfc7517#section-9.3>
     pub n: String,
-
     /// Algorithm parameter, <https://datatracker.ietf.org/doc/html/rfc7517#section-4.4>
     pub alg: String,
 }
 
-/// Key to uniquely identify a JWK
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// jwk-id = string string
-/// ```
+/// Key to identify a JWK, consists of iss and kid.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(
     feature = "serde",
@@ -253,26 +119,12 @@ pub struct Jwk {
 )]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct JwkId {
-    /// The issuer or identity of the OIDC provider.
+    /// iss string that identifies the OIDC provider.
     pub iss: String,
-
-    /// A key id use to uniquely identify a key from an OIDC provider.
+    /// kid string that identifies the JWK.
     pub kid: String,
 }
 
-/// A point on the BN254 elliptic curve.
-///
-/// This is a 32-byte, or 256-bit, value that is generally represented as radix10 when a
-/// human-readable display format is needed, and is represented as a 32-byte big-endian value while
-/// in memory.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// bn254-field-element = *DIGIT ; which is then interpreted as a radix10 encoded 32-byte value
-/// ```
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct Bn254FieldElement([u8; 32]);
@@ -445,8 +297,7 @@ mod serialization {
                 }
 
                 let Readable { iss, address_seed } = Deserialize::deserialize(deserializer)?;
-                Self::new(iss, address_seed)
-                    .ok_or_else(|| serde::de::Error::custom("invalid zklogin public identifier"))
+                Ok(Self { iss, address_seed })
             } else {
                 let bytes: Cow<'de, [u8]> = Bytes::deserialize_as(deserializer)?;
                 let iss_len = *bytes
@@ -464,8 +315,10 @@ mod serialization {
                     .map_err(serde::de::Error::custom)
                     .map(Bn254FieldElement)?;
 
-                Self::new(iss.into(), address_seed)
-                    .ok_or_else(|| serde::de::Error::custom("invalid zklogin public identifier"))
+                Ok(Self {
+                    iss: iss.into(),
+                    address_seed,
+                })
             }
         }
     }

@@ -56,7 +56,7 @@ pub struct ServiceConfig {
     /// Maximum number of structs that need to be processed when calculating the layout of a single
     /// Move Type.
     pub max_type_nodes: i32,
-    /// Maximum time in milliseconds spent waiting for a response from fullnode after ismysong a
+    /// Maximum time in milliseconds spent waiting for a response from fullnode after isng a
     /// a transaction to execute. Note that the transaction may still succeed even in the case of a
     /// timeout. Transactions are idempotent, so a transaction that times out should be resubmitted
     /// until the network returns a definite response (success or failure, not timeout).

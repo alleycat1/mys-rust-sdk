@@ -3,16 +3,6 @@ use super::Bls12381Signature;
 use crate::checkpoint::EpochId;
 use crate::checkpoint::StakeUnit;
 
-/// The Validator Set for a particular epoch.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// validator-committee = u64 ; epoch
-///                       (vector validator-committee-member)
-/// ```
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(
     feature = "serde",
@@ -25,16 +15,6 @@ pub struct ValidatorCommittee {
     pub members: Vec<ValidatorCommitteeMember>,
 }
 
-/// A member of a Validator Committee
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// validator-committee-member = bls-public-key
-///                              u64 ; stake
-/// ```
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(
     feature = "serde",
@@ -42,28 +22,12 @@ pub struct ValidatorCommittee {
 )]
 #[cfg_attr(feature = "proptest", derive(test_strategy::Arbitrary))]
 pub struct ValidatorCommitteeMember {
+    #[cfg_attr(feature = "serde", serde(with = "ValidatorPublicKeySerialization"))]
     pub public_key: Bls12381PublicKey,
     #[cfg_attr(feature = "serde", serde(with = "crate::_serde::ReadableDisplay"))]
     pub stake: StakeUnit,
 }
 
-/// An aggregated signature from multiple Validators.
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// validator-aggregated-signature = u64               ; epoch
-///                                  bls-signature
-///                                  roaring-bitmap
-/// roaring-bitmap = bytes  ; where the contents of the bytes are valid
-///                         ; according to the serialized spec for
-///                         ; roaring bitmaps
-/// ```
-///
-/// See [here](https://github.com/RoaringBitmap/RoaringFormatSpec) for the specification for the
-/// serialized format of RoaringBitmaps.
 #[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(
     feature = "serde",
@@ -90,17 +54,38 @@ type RoaringBitMapSerialization = ::serde_with::As<
     >,
 >;
 
-/// A signature from a Validator
-///
-/// # BCS
-///
-/// The BCS serialized form for this type is defined by the following ABNF:
-///
-/// ```text
-/// validator-signature = u64               ; epoch
-///                       bls-public-key
-///                       bls-signature
-/// ```
+// Similar to Digest...unfortunately validator's public key material is serialized with the length
+// (96) prefixed
+#[cfg(feature = "serde")]
+type ValidatorPublicKeySerialization = ::serde_with::As<
+    ::serde_with::IfIsHumanReadable<::serde_with::DisplayFromStr, BinaryValidatorPublicKey>,
+>;
+
+#[cfg(feature = "serde")]
+struct BinaryValidatorPublicKey;
+
+#[cfg(feature = "serde")]
+impl serde_with::SerializeAs<Bls12381PublicKey> for BinaryValidatorPublicKey {
+    fn serialize_as<S>(source: &Bls12381PublicKey, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        ::serde_with::Bytes::serialize_as(source.inner(), serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde_with::DeserializeAs<'de, Bls12381PublicKey> for BinaryValidatorPublicKey {
+    fn deserialize_as<D>(deserializer: D) -> Result<Bls12381PublicKey, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let bytes: [u8; Bls12381PublicKey::LENGTH] =
+            ::serde_with::Bytes::deserialize_as(deserializer)?;
+        Ok(Bls12381PublicKey::new(bytes))
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(
     feature = "serde",
@@ -110,6 +95,7 @@ type RoaringBitMapSerialization = ::serde_with::As<
 pub struct ValidatorSignature {
     #[cfg_attr(feature = "serde", serde(with = "crate::_serde::ReadableDisplay"))]
     pub epoch: EpochId,
+    #[cfg_attr(feature = "serde", serde(with = "ValidatorPublicKeySerialization"))]
     pub public_key: Bls12381PublicKey,
     pub signature: Bls12381Signature,
 }

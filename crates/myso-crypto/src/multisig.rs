@@ -1,10 +1,10 @@
 use crate::SignatureError;
 use crate::Verifier;
-use myso_sdk_types::MultisigAggregatedSignature;
-use myso_sdk_types::MultisigCommittee;
-use myso_sdk_types::MultisigMemberPublicKey;
-use myso_sdk_types::MultisigMemberSignature;
-use myso_sdk_types::UserSignature;
+use _sdk_types::MultisigAggregatedSignature;
+use _sdk_types::MultisigCommittee;
+use _sdk_types::MultisigMemberPublicKey;
+use _sdk_types::MultisigMemberSignature;
+use _sdk_types::UserSignature;
 
 #[derive(Default)]
 pub struct MultisigVerifier {
@@ -267,7 +267,7 @@ pub struct MultisigAggregator {
 impl MultisigAggregator {
     pub fn new_with_transaction(
         committee: MultisigCommittee,
-        transaction: &myso_sdk_types::Transaction,
+        transaction: &_sdk_types::Transaction,
     ) -> Self {
         Self {
             committee,
@@ -280,7 +280,7 @@ impl MultisigAggregator {
 
     pub fn new_with_message(
         committee: MultisigCommittee,
-        message: &myso_sdk_types::PersonalMessage<'_>,
+        message: &_sdk_types::PersonalMessage<'_>,
     ) -> Self {
         Self {
             committee,
@@ -360,7 +360,7 @@ impl MultisigAggregator {
 fn multisig_pubkey_and_signature_from_user_signature(
     signature: UserSignature,
 ) -> Result<(MultisigMemberPublicKey, MultisigMemberSignature), SignatureError> {
-    use myso_sdk_types::SimpleSignature;
+    use _sdk_types::SimpleSignature;
     match signature {
         UserSignature::Simple(SimpleSignature::Ed25519 {
             signature,

@@ -3,12 +3,12 @@ use std::collections::HashMap;
 use crate::SignatureError;
 use poseidon::POSEIDON;
 use signature::Verifier;
-use myso_sdk_types::Jwk;
-use myso_sdk_types::JwkId;
-use myso_sdk_types::UserSignature;
-use myso_sdk_types::ZkLoginAuthenticator;
-use myso_sdk_types::ZkLoginClaim;
-use myso_sdk_types::ZkLoginInputs;
+use _sdk_types::Claim;
+use _sdk_types::Jwk;
+use _sdk_types::JwkId;
+use _sdk_types::UserSignature;
+use _sdk_types::ZkLoginAuthenticator;
+use _sdk_types::ZkLoginInputs;
 
 mod poseidon;
 mod verify;
@@ -138,10 +138,7 @@ impl JwtHeader {
 }
 
 /// Parse the extended claim json value to its claim value, using the expected claim key.
-fn verify_extended_claim(
-    claim: &ZkLoginClaim,
-    expected_key: &str,
-) -> Result<String, SignatureError> {
+fn verify_extended_claim(claim: &Claim, expected_key: &str) -> Result<String, SignatureError> {
     /// Map a base64 string to a bit array by taking each char's index and convert it to binary form with one bit per u8
     /// element in the output. Returns SignatureError if one of the characters is not in the base64 charset.
     fn base64_to_bitarray(input: &str) -> Result<Vec<u8>, SignatureError> {
@@ -248,10 +245,10 @@ fn verify_extended_claim(
 
 pub(crate) fn zklogin_identifier_from_inputs(
     inputs: &ZkLoginInputs,
-) -> Result<myso_sdk_types::ZkLoginPublicIdentifier, SignatureError> {
+) -> Result<_sdk_types::ZkLoginPublicIdentifier, SignatureError> {
     const ISS: &str = "iss";
 
     let iss = verify_extended_claim(&inputs.iss_base64_details, ISS)?;
-    myso_sdk_types::ZkLoginPublicIdentifier::new(iss, inputs.address_seed.clone())
+    _sdk_types::ZkLoginPublicIdentifier::new(iss, inputs.address_seed.clone())
         .ok_or_else(|| SignatureError::from_source("invalid iss"))
 }

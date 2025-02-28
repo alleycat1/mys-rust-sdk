@@ -5,29 +5,29 @@ mod error;
 pub mod unresolved;
 
 use error::Error;
-use myso_types::Address;
-use myso_types::Argument;
-use myso_types::Command;
-use myso_types::GasPayment;
-use myso_types::Identifier;
-use myso_types::Input;
-use myso_types::MakeMoveVector;
-use myso_types::MergeCoins;
-use myso_types::MoveCall;
-use myso_types::ObjectId;
-use myso_types::ObjectReference;
-use myso_types::Publish;
-use myso_types::SplitCoins;
-use myso_types::Transaction;
-use myso_types::TransactionExpiration;
-use myso_types::TransferObjects;
-use myso_types::TypeTag;
-use myso_types::Upgrade;
+use _types::Address;
+use _types::Argument;
+use _types::Command;
+use _types::GasPayment;
+use _types::Identifier;
+use _types::Input;
+use _types::MakeMoveVector;
+use _types::MergeCoins;
+use _types::MoveCall;
+use _types::ObjectId;
+use _types::ObjectReference;
+use _types::Publish;
+use _types::SplitCoins;
+use _types::Transaction;
+use _types::TransactionExpiration;
+use _types::TransferObjects;
+use _types::TypeTag;
+use _types::Upgrade;
 
 use base64ct::Encoding;
 use serde::Serialize;
 
-/// A builder for creating transactions. Use `resolve` to finalize the transaction data.
+/// A builder for creating transactions. Use [`resolve`] to finalize the transaction data.
 #[derive(Clone, Default, Debug)]
 pub struct TransactionBuilder {
     /// The inputs to the transaction.
@@ -95,7 +95,7 @@ impl TransactionBuilder {
 
     /// Add one or more gas objects to use to pay for the transaction.
     ///
-    /// Most commonly the gas can be passed as a reference to an owned/immutable `Object`,
+    /// Most commonly the gas can be passed as a reference to an owned/immutable [`Object`],
     /// or can created using one of the of the constructors of the [`unresolved::Input`] enum,
     /// e.g., [`unresolved::Input::owned`].
     pub fn add_gas_objects<O, I>(&mut self, gas: I)
@@ -220,14 +220,14 @@ impl TransactionBuilder {
     ///  Examples:
     ///  ### Upgrade a package with some pre-known data.
     ///  ```rust,ignore
-    ///  use myso_graphql_client::Client;
-    ///  use myso_sdk_types::unresolved;
-    ///  use myso_transaction_builder::TransactionBuilder;
-    ///  use myso_transaction_builder::Function;
+    ///  use _graphql_client::Client;
+    ///  use _sdk_types::unresolved;
+    ///  use _transaction_builder::TransactionBuilder;
+    ///  use _transaction_builder::Function;
     ///
     ///  let mut tx = TransactionBuilder::new();
     ///  let package_id = "0x...".parse().unwrap();
-    ///  let upgrade_cap = tx.input(unresolved::Input::by_id("0x...".parse().unwrap()));
+    ///  let upgrade_cap = tx.input(unresolved::Input::by_id("0x...".parse().unwrap());
     ///  let upgrade_policy = tx.input(Serialized(&0u8));
     ///  // the digest of the new package that was compiled
     ///  let package_digest: &[u8] = &[
@@ -286,7 +286,7 @@ impl TransactionBuilder {
     }
 
     /// Assuming everything is resolved, convert this transaction into the
-    /// resolved form. Returns a [`Transaction`] if successful, or an `Error` if not.
+    /// resolved form. Returns a [`Transaction`] if successful, or an [`Error`] if not.
     pub fn finish(self) -> Result<Transaction, Error> {
         let Some(sender) = self.sender else {
             return Err(Error::MissingSender);
@@ -302,8 +302,8 @@ impl TransactionBuilder {
         };
 
         Ok(Transaction {
-            kind: myso_types::TransactionKind::ProgrammableTransaction(
-                myso_types::ProgrammableTransaction {
+            kind: _types::TransactionKind::ProgrammableTransaction(
+                _types::ProgrammableTransaction {
                     inputs: self
                         .inputs
                         .into_iter()
@@ -482,27 +482,27 @@ mod tests {
     use serde::de;
     use serde::Deserialize;
     use serde::Deserializer;
-    use myso_crypto::ed25519::Ed25519PrivateKey;
-    use myso_crypto::MySoSigner;
-    use myso_graphql_client::faucet::CoinInfo;
-    use myso_graphql_client::faucet::FaucetClient;
-    use myso_graphql_client::Client;
-    use myso_graphql_client::PaginationFilter;
-    use myso_types::Address;
-    use myso_types::ExecutionStatus;
-    use myso_types::IdOperation;
-    use myso_types::ObjectId;
-    use myso_types::ObjectType;
-    use myso_types::TransactionEffects;
-    use myso_types::TypeTag;
+    use _crypto::ed25519::Ed25519PrivateKey;
+    use _crypto::MySoSigner;
+    use _graphql_client::faucet::CoinInfo;
+    use _graphql_client::faucet::FaucetClient;
+    use _graphql_client::Client;
+    use _graphql_client::PaginationFilter;
+    use _types::Address;
+    use _types::ExecutionStatus;
+    use _types::IdOperation;
+    use _types::ObjectId;
+    use _types::ObjectType;
+    use _types::TransactionEffects;
+    use _types::TypeTag;
 
     use crate::unresolved::Input;
     use crate::Function;
     use crate::Serialized;
     use crate::TransactionBuilder;
-    use myso_types::TransactionDigest;
+    use _types::TransactionDigest;
 
-    /// Type corresponding to the output of `myso move build --dump-bytecode-as-base64`
+    /// Type corresponding to the output of ` move build --dump-bytecode-as-base64`
     #[derive(serde::Deserialize, Debug)]
     struct MovePackageData {
         #[serde(deserialize_with = "bcs_from_str")]
@@ -532,11 +532,11 @@ mod tests {
             .collect()
     }
 
-    /// This is used to read the json file that contains the modules/deps/digest generated with myso
+    /// This is used to read the json file that contains the modules/deps/digest generated with 
     /// move build --dump-bytecode-as-base64 on the `test_example_v1 and test_example_v2` projects
     /// in the tests directory.
     /// The json files are generated automatically when running `make test-with-localnet` in the
-    /// root of the myso-transaction-builder crate.
+    /// root of the -transaction-builder crate.
     fn move_package_data(file: &str) -> MovePackageData {
         let data = std::fs::read_to_string(file)
             .with_context(|| {
@@ -553,7 +553,7 @@ mod tests {
     /// Generate a random private key and its corresponding address
     fn helper_address_pk() -> (Address, Ed25519PrivateKey) {
         let pk = Ed25519PrivateKey::generate(rand::thread_rng());
-        let address = pk.public_key().derive_address();
+        let address = pk.public_key().to_address();
         (address, pk)
     }
 
@@ -606,7 +606,7 @@ mod tests {
     async fn wait_for_tx_and_check_effects_status_success(
         client: &Client,
         digest: TransactionDigest,
-        effects: Result<Option<TransactionEffects>, myso_graphql_client::error::Error>,
+        effects: Result<Option<TransactionEffects>, _graphql_client::error::Error>,
     ) {
         assert!(effects.is_ok(), "Execution failed. Effects: {:?}", effects);
         // wait for the transaction to be finalized
@@ -854,10 +854,10 @@ mod tests {
                         if obj.id_operation == IdOperation::Created {
                             let change = obj.output_state;
                             match change {
-                                myso_types::ObjectOut::PackageWrite { .. } => {
+                                _types::ObjectOut::PackageWrite { .. } => {
                                     package_id = Some(obj.object_id);
                                 }
-                                myso_types::ObjectOut::ObjectWrite { .. } => {
+                                _types::ObjectOut::ObjectWrite { .. } => {
                                     created_objs.push(obj.object_id);
                                 }
                                 _ => {}
@@ -877,19 +877,19 @@ mod tests {
             match obj.object_type() {
                 ObjectType::Struct(x) if x.name.to_string() == "UpgradeCap" => {
                     match obj.owner() {
-                        myso_types::Owner::Address(_) => {
+                        _types::Owner::Address(_) => {
                             let obj: Input = (&obj).into();
                             upgrade_cap = Some(tx.input(obj.with_owned_kind()))
                         }
-                        myso_types::Owner::Shared(_) => {
+                        _types::Owner::Shared(_) => {
                             upgrade_cap = Some(tx.input(&obj))
                         }
                         // If the capability is owned by an object, then the module defining the owning
                         // object gets to decide how the upgrade capability should be used.
-                        myso_types::Owner::Object(_) => {
+                        _types::Owner::Object(_) => {
                             panic!("Upgrade capability controlled by object")
                         }
-                        myso_types::Owner::Immutable => panic!("Upgrade capability is stored immutably and cannot be used for upgrades"),
+                        _types::Owner::Immutable => panic!("Upgrade capability is stored immutably and cannot be used for upgrades"),
                     };
                     break;
                 }

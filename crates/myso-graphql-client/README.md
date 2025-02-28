@@ -1,8 +1,8 @@
-# myso-graphql-client
+# -graphql-client
 
-[![myso-graphql-client on crates.io](https://img.shields.io/crates/v/myso-graphql-client)](https://crates.io/crates/myso-graphql-client)
-[![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/myso-graphql-client)
-[![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/myso-rust-sdk/myso-graphql-client/)
+[![-graphql-client on crates.io](https://img.shields.io/crates/v/-graphql-client)](https://crates.io/crates/-graphql-client)
+[![Documentation (latest release)](https://img.shields.io/badge/docs-latest-brightgreen)](https://docs.rs/-graphql-client)
+[![Documentation (master)](https://img.shields.io/badge/docs-master-59f)](https://mystenlabs.github.io/-rust-sdk/-graphql-client/)
 
 The MySo GraphQL client is a client for interacting with the MySo blockchain via GraphQL.
 It provides a set of APIs for querying the blockchain for information such as chain identifier,
@@ -21,7 +21,7 @@ executing transactions and more.
 Instantiate a client with [`Client::new(server: &str)`] or use one of the predefined functions for different networks [`Client`].
 
 ```rust, no_run
-use myso_graphql_client::Client;
+use _graphql_client::Client;
 use anyhow::Result;
 
 #[tokio::main]
@@ -41,8 +41,8 @@ The client provides an API to request gas from the faucet. The `request_and_wait
 
 ### Example for standard devnet/testnet/local networks.
 ```rust, no_run
-use myso_graphql_client::faucet::FaucetClient;
-use myso_types::Address;
+use _graphql_client::faucet::FaucetClient;
+use _types::Address;
 
 use anyhow::Result;
 use std::str::FromStr;
@@ -67,10 +67,10 @@ async fn main() -> Result<()> {
 ```
 
 ### Example for custom faucet service.
-Note that this `FaucetClient` is explicitly designed to work with two endpoints: `v1/gas`, and `v1/status`. When passing in the custom faucet URL, skip the final endpoint and only pass in the top-level url (e.g., `https://faucet.devnet.myso.io`).
+Note that this [`FaucetClient`] is explicitly designed to work with two endpoints: `v1/gas`, and `v1/status`. When passing in the custom faucet URL, skip the final endpoint and only pass in the top-level url (e.g., `https://faucet.devnet..io`).
 ```rust, no_run
-use myso_graphql_client::faucet::FaucetClient;
-use myso_types::Address;
+use _graphql_client::faucet::FaucetClient;
+use _types::Address;
 
 use anyhow::Result;
 use std::str::FromStr;
@@ -114,7 +114,7 @@ query CustomQuery($id: UInt53) {
 }
 ```
 
-When using `cynic` and `myso-graphql-client`, you will need to register the schema by calling `myso-graphql-client-build::register_schema` in a `build.rs` file. See [myso-graphql-client-build](https://github.com/MystenLabs/myso-rust-sdk/tree/master/crates/myso-graphql-client-build) for more information.
+When using `cynic` and `-graphql-client`, you will need to register the schema by calling `-graphql-client-build::register_schema` in a `build.rs` file. See [-graphql-client-build](https://github.com/MystenLabs/-rust-sdk/tree/master/crates/-graphql-client-build) for more information.
 
 The generated query types are defined below. Note that the `id` variable is optional (to make it mandatory change the schema to $id: Uint53! -- note the ! character which indicates a mandatory field). That means that if the `id` variable is not provided, the query will return the data for the last known epoch.
 Note that instead of using `Uint53`, the scalar is mapped to `u64` in the library using `impl_scalar(u64, schema::Uint53)`, thus all references to `Uint53` in the schema are replaced with `u64` in the code below.
@@ -151,11 +151,11 @@ The complete example is shown below:
 use anyhow::Result;
 use cynic::QueryBuilder;
 
-use myso_graphql_client::{
+use _graphql_client::{
     query_types::{schema, BigInt},
     Client,
 };
-use myso_types::Address;
+use _types::Address;
 
 // The data returned by the custom query.
 #[derive(cynic::QueryFragment, Debug)]
