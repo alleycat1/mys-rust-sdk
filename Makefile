@@ -4,8 +4,8 @@ all:: ci
 
 .PHONY: check-features
 check-features:
-	$(MAKE) -C crates/mysocial-sdk-types check-features
-	$(MAKE) -C crates/mysocial-crypto check-features
+	$(MAKE) -C crates/mso-sdk-types check-features
+	$(MAKE) -C crates/mso-crypto check-features
 
 .PHONY: check-fmt
 check-fmt:
@@ -21,20 +21,20 @@ clippy:
 
 .PHONY: test
 test:
-	cargo nextest run --all-features -p mysocial-sdk-types -p mysocial-crypto
+	cargo nextest run --all-features -p mso-sdk-types -p mso-crypto
 	cargo test --doc
 
-package_%.json: crates/mysocial-transaction-builder/tests/%/Move.toml crates/mysocial-transaction-builder/tests/%/sources/*.move
-	cd crates/mysocial-transaction-builder/tests/$(*F) && mysocial move build --ignore-chain --dump-bytecode-as-base64 > ../../$@
+package_%.json: crates/mso-transaction-builder/tests/%/Move.toml crates/mso-transaction-builder/tests/%/sources/*.move
+	cd crates/mso-transaction-builder/tests/$(*F) && mso move build --ignore-chain --dump-bytecode-as-base64 > ../../$@
 
 .PHONY: test-with-localnet
 test-with-localnet: package_test_example_v1.json package_test_example_v2.json
-	cargo nextest run -p mysocial-graphql-client -p mysocial-transaction-builder
+	cargo nextest run -p mso-graphql-client -p mso-transaction-builder
 
 .PHONY: wasm
 wasm:
-	$(MAKE) -C crates/mysocial-sdk-types wasm
-	$(MAKE) -C crates/mysocial-crypto wasm
+	$(MAKE) -C crates/mso-sdk-types wasm
+	$(MAKE) -C crates/mso-crypto wasm
 
 .PHONY: doc
 doc:
